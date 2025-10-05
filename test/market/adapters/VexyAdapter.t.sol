@@ -9,7 +9,7 @@ import {IVotingEscrow} from "src/interfaces/IVotingEscrow.sol";
 import {Loan} from "src/LoanV2.sol";
 import {Vault} from "src/VaultV2.sol";
 import {BaseDeploy} from "script/BaseDeploy.s.sol";
-import {IDiamondCut} from "src/libraries/LibDiamond.sol";
+import {IDiamondCut} from "src/interfaces/IDiamondCut.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IVexyMarketplace} from "src/interfaces/external/IVexyMarketplace.sol";
 import {IMarketOfferFacet} from "src/interfaces/IMarketOfferFacet.sol";
@@ -123,12 +123,12 @@ contract VexyAdapterTest is DiamondMarketTestBase {
             IERC20(currency).transfer(buyer, offerPrice);
         }
 
-        // Create a wide-tolerance offer from buyer
+        // Create offer from buyer (debtTolerance=0 since Vexy listings are wallet NFTs with no debt)
         vm.startPrank(buyer);
         IERC20(currency).approve(diamond, offerPrice+fee);
         IMarketOfferFacet(diamond).createOffer({
             minWeight: 1,
-            debtTolerance: type(uint256).max,
+            debtTolerance: 0,
             price: offerPrice,
             paymentToken: currency,
             expiresAt: block.timestamp + 7 days
